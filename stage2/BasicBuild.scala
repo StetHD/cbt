@@ -39,8 +39,6 @@ trait BaseBuild extends BuildInterface with DependencyImplementation with Trigge
   def defaultScalaVersion: String = constants.scalaVersion
   final def scalaVersion = context.scalaVersion getOrElse defaultScalaVersion
   final def scalaMajorVersion: String = lib.libMajorVersion(scalaVersion)
-  def crossScalaVersions: Seq[String] = Seq(scalaVersion, "2.10.6")
-  final def crossScalaVersionsArray: Array[String] = crossScalaVersions.to
   def projectName = "default"
 
   // TODO: get rid of this in favor of newBuild.
