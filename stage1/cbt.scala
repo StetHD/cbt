@@ -48,9 +48,9 @@ object `package`{
   }
   implicit class DependencyExtensions(subject: Dependency){
     import subject._
-    def dependencyClasspath: ClassPath = ClassPath(dependencyClasspathArray.to)
+    def dependencyClasspath(implicit logger: Logger): ClassPath = Dependencies(dependenciesArray.to).classpath
     def exportedClasspath: ClassPath = ClassPath(exportedClasspathArray.to)
-    def classpath = exportedClasspath ++ dependencyClasspath
+    def classpath(implicit logger: Logger) = exportedClasspath ++ dependencyClasspath
     def dependencies: Seq[Dependency] = dependenciesArray.to
     def needsUpdate: Boolean = needsUpdateCompat
   }
