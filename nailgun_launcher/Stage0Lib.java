@@ -11,6 +11,7 @@ import static java.io.File.pathSeparator;
 import static cbt.NailgunLauncher.*;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
+import static java.lang.Math.min;
 
 public class Stage0Lib{
   public static void _assert(Boolean condition, Object msg){
@@ -53,14 +54,15 @@ public class Stage0Lib{
     return file;
   }
 
-  public static Boolean compile(
-    Boolean changed, Long start, String classpath, String target,
+  public static Long compile(
+    Long lastModified, Long start, String classpath, String target,
     EarlyDependencies earlyDeps, List<File> sourceFiles
   ) throws Throwable{
     File statusFile = new File( new File(target) + ".last-success" );
-    Long lastSuccessfullCompile = statusFile.lastModified();
+    lastModified = min(lastModified, statusFile.lastModified());
+    Boolean changed = false;
     for( File file: sourceFiles ){
-      if( file.lastModified() > lastSuccessfullCompile ){
+      if( file.lastModified() > lastModified ){
         changed = true;
         break;
       }
@@ -94,6 +96,7 @@ public class Stage0Lib{
         if( exitCode == 0 ){
           write( statusFile, "" );
           Files.setLastModifiedTime( statusFile.toPath(), FileTime.fromMillis(start) );
+          lastModified = min(start, lastModified);
         } else {
           System.exit( exitCode );
         }
@@ -101,7 +104,7 @@ public class Stage0Lib{
         System.setOut(oldOut);
       }
     }
-    return changed;
+    return lastModified;
   }
 
   public static ClassLoader classLoader( String file ) throws Throwable{
